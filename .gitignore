@@ -1,0 +1,8 @@
+venv
+
+build
+dist
+
+pretrained_models
+
+execute_spleeter.spec
