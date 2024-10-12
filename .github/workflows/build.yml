@@ -37,12 +37,16 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: pyinstaller --onefile --name lite-spleeter_macos  --collect-all spleeter execute_spleeter.py
 
+    - name: Get tag version
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: v__VERSION__
-        release_name: Release v__VERSION__
+        tag_name: ${{ env.VERSION }}
+        release_name: Release ${{ env.VERSION }}
         body: |
           This release includes the built lite-spleeter binaries.
       env:
