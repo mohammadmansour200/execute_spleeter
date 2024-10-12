@@ -27,6 +27,7 @@ jobs:
       run: pip install --upgrade pip && pip install lite-spleeter_macos pyinstaller
             
     - name: Install packages
+      if: matrix.os != 'macos-latest'
       run: pip install lite-spleeter pyinstaller
     
     - name: Build lite-spleeter (Linux)
@@ -44,9 +45,9 @@ jobs:
     - name: Get tag version
       id: get_version
       run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      shell: bash
 
     - name: Create Release
-      if: matrix.os == 'ubuntu-latest'
       id: create_release
       uses: actions/create-release@v1
       with:
@@ -67,7 +68,7 @@ jobs:
           asset_content_type: application/octet-stream
 
     - name: Upload lite-spleeter binary to Release (Windows)
-      if: success() && matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-latest'
       uses: actions/upload-release-asset@v1
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -77,7 +78,7 @@ jobs:
 
 
     - name: Upload lite-spleeter binary to Release (macOS)
-      if: success() && matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-latest'
       uses: actions/upload-release-asset@v1
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
