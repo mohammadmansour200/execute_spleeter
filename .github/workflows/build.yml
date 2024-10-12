@@ -1,0 +1,76 @@
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: setup Python
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+        
+    - name: Install packages
+    - run: pip install lite-spleeter pyinstaller
+    
+    - name: Build lite-spleeter (Linux)
+    - if: matrix.platform == 'ubuntu-latest'
+    - run: pyinstaller --onefile --name lite-spleeter_linux  --collect-all spleeter execute_spleeter.py
+    
+    - name: Build lite-spleeter (Windows)
+    - if: matrix.platform == 'windows-latest'
+    - run: pyinstaller --onefile --name lite-spleeter_windows  --collect-all spleeter execute_spleeter.py
+    
+    - name: Build lite-spleeter (macOS)
+    - if: matrix.platform == 'macos-latest'
+    - run: pyinstaller --onefile --name lite-spleeter_macos  --collect-all spleeter execute_spleeter.py
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          This release includes the built lite-spleeter binaries.
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload lite-spleeter binary to Release (Windows)
+      if: success() 
+      uses: actions/upload-release-asset@v1
+      with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ runner.workspace }}/dist/lite-spleeter_windows.exe 
+          asset_name: lite-spleeter_windows.exe 
+          asset_content_type: application/octet-stream
+
+    - name: Upload lite-spleeter binary to Release (Linux)
+      if: success() 
+      uses: actions/upload-release-asset@v1
+      with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ runner.workspace }}/dist/lite-spleeter_linux 
+          asset_name: lite-spleeter_linux 
+          asset_content_type: application/octet-stream
+
+    - name: Upload lite-spleeter binary to Release (macOS)
+      if: success() 
+      uses: actions/upload-release-asset@v1
+      with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ runner.workspace }}/dist/lite-spleeter_macos 
+          asset_name: lite-spleeter_macos 
+          asset_content_type: application/octet-stream
+ 
