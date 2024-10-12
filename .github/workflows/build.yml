@@ -40,7 +40,7 @@ jobs:
     
     - name: Build lite-spleeter (macOS)
       if: matrix.os == 'macos-latest'
-      run: pyinstaller --onefile --name lite-spleeter_macos --target-arch universal2 --collect-all spleeter execute_spleeter.py
+      run: pyinstaller --onefile --name lite-spleeter_macos --collect-all spleeter execute_spleeter.py
         
     - name: Upload lite-spleeter binary to Release (Linux)
       if: matrix.os == 'ubuntu-latest'
