@@ -17,24 +17,24 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: setup Python
-    - uses: actions/setup-python@v2
+      uses: actions/setup-python@v2
       with:
         python-version: 3.9
         
     - name: Install packages
-    - run: pip install lite-spleeter pyinstaller
+      run: pip install lite-spleeter pyinstaller
     
     - name: Build lite-spleeter (Linux)
-    - if: matrix.platform == 'ubuntu-latest'
-    - run: pyinstaller --onefile --name lite-spleeter_linux  --collect-all spleeter execute_spleeter.py
+      if: matrix.platform == 'ubuntu-latest'
+      run: pyinstaller --onefile --name lite-spleeter_linux  --collect-all spleeter execute_spleeter.py
     
     - name: Build lite-spleeter (Windows)
-    - if: matrix.platform == 'windows-latest'
-    - run: pyinstaller --onefile --name lite-spleeter_windows  --collect-all spleeter execute_spleeter.py
+      if: matrix.platform == 'windows-latest'
+      run: pyinstaller --onefile --name lite-spleeter_windows  --collect-all spleeter execute_spleeter.py
     
     - name: Build lite-spleeter (macOS)
-    - if: matrix.platform == 'macos-latest'
-    - run: pyinstaller --onefile --name lite-spleeter_macos  --collect-all spleeter execute_spleeter.py
+      if: matrix.platform == 'macos-latest'
+      run: pyinstaller --onefile --name lite-spleeter_macos  --collect-all spleeter execute_spleeter.py
 
     - name: Create Release
       id: create_release
