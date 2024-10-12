@@ -32,57 +32,38 @@ jobs:
     
     - name: Build lite-spleeter (Linux)
       if: matrix.os == 'ubuntu-latest'
-      run: pyinstaller --onefile --name lite-spleeter_linux  --collect-all spleeter execute_spleeter.py
+      run: pyinstaller --onefile --name lite-spleeter_linux --collect-all spleeter execute_spleeter.py
     
     - name: Build lite-spleeter (Windows)
       if: matrix.os == 'windows-latest'
-      run: pyinstaller --onefile --name lite-spleeter_windows  --collect-all spleeter execute_spleeter.py
+      run: pyinstaller --onefile --name lite-spleeter_windows --collect-all spleeter execute_spleeter.py
     
     - name: Build lite-spleeter (macOS)
       if: matrix.os == 'macos-latest'
-      run: pyinstaller --onefile --name lite-spleeter_macos  --collect-all spleeter execute_spleeter.py
-
-    - name: Get tag version
-      id: get_version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ env.VERSION }}
-        release_name: Release ${{ env.VERSION }}
-        body: |
-          This release includes the built lite-spleeter binaries.
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: pyinstaller --onefile --name lite-spleeter_macos --target-arch universal2 --collect-all spleeter execute_spleeter.py
         
     - name: Upload lite-spleeter binary to Release (Linux)
       if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-release-asset@v1
+      uses: ncipollo/release-action@v1
       with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/lite-spleeter_linux
-          asset_name: lite-spleeter_linux 
-          asset_content_type: application/octet-stream
+        artifacts: "dist/lite-spleeter_linux"
+        replacesArtifacts: false
+        allowUpdates: true
 
     - name: Upload lite-spleeter binary to Release (Windows)
       if: matrix.os == 'windows-latest'
-      uses: actions/upload-release-asset@v1
+      uses: ncipollo/release-action@v1
       with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/lite-spleeter_windows.exe 
-          asset_name: lite-spleeter_windows.exe 
-          asset_content_type: application/octet-stream
-
+        artifacts: "dist/lite-spleeter_windows.exe"
+        replacesArtifacts: false
+        allowUpdates: true
 
     - name: Upload lite-spleeter binary to Release (macOS)
       if: matrix.os == 'macos-latest'
-      uses: actions/upload-release-asset@v1
+      uses: ncipollo/release-action@v1
       with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/lite-spleeter_macos 
-          asset_name: lite-spleeter_macos 
-          asset_content_type: application/octet-stream
+        artifacts: "dist/lite-spleeter_macos"
+        replacesArtifacts: false
+        allowUpdates: true
+
  
